@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TFPPL Starch Plant - Analytical Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            min-height: 100vh;
+            padding: 0;
+            margin: 0;
+        }
+
+        .top-bar {
+            background: linear-gradient(135deg, #d4961f 0%, #b8860b 100%);
+            padding: 3px 0;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+            padding: 50px 60px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            margin-bottom: 40px;
+            border-bottom: 4px solid #d4961f;
+            position: relative;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #d4961f 0%, #f4a524 50%, #d4961f 100%);
+        }
+
+        h1 {
+            color: #1a1a1a;
+            font-size: 3em;
+            margin-bottom: 8px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            text-transform: uppercase;
+        }
+
+        .company-name {
+            color: #d4961f;
+            font-weight: 800;
+        }
+
+        .subtitle {
+            color: #555;
+            font-size: 1.15em;
+            font-weight: 400;
+            letter-spacing: 0.3px;
+            margin-bottom: 20px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            padding: 0 20px;
+        }
+
+        .tab {
+            flex: 1;
+            min-width: 220px;
+            padding: 18px 30px;
+            background: linear-gradient(145deg, #ffffff 0%, #f5f5f5 100%);
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            color: #333;
+        }
+
+        .tab:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+            border-color: #d4961f;
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, #d4961f 0%, #b8860b 100%);
+            color: white;
+            border-color: #d4961f;
+            box-shadow: 0 6px 20px rgba(212, 150, 31, 0.3);
+        }
+
+        .calculator-section {
+            display: none;
+            background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            margin: 0 20px 40px 20px;
+            border: 1px solid #e5e5e5;
+        }
+
+        .calculator-section.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2c2c2c;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #d4961f;
+            box-shadow: 0 0 0 3px rgba(212, 150, 31, 0.1);
+        }
+
+        .input-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #d4961f 0%, #b8860b 100%);
+            color: white;
+            padding: 16px 48px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.05em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 25px;
+            box-shadow: 0 4px 12px rgba(212, 150, 31, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(212, 150, 31, 0.4);
+            background: linear-gradient(135deg, #e5a520 0%, #c9940c 100%);
+        }
+
+        .result-box {
+            margin-top: 35px;
+            padding: 30px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 10px;
+            display: none;
+            border-left: 5px solid #d4961f;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .result-box.show {
+            display: block;
+        }
+
+        .result-item {
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .result-label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .result-value {
+            font-size: 1.4em;
+            color: #d4961f;
+            font-weight: 700;
+        }
+
+        .info-text {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 12px;
+            font-style: italic;
+            padding: 12px;
+            background: rgba(212, 150, 31, 0.05);
+            border-radius: 6px;
+            border-left: 3px solid #d4961f;
+        }
+
+        h2 {
+            color: #1a1a1a;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #d4961f;
+            font-weight: 700;
+            font-size: 1.8em;
+            letter-spacing: -0.3px;
+        }
+
+        .admin-lock {
+            position: relative;
+        }
+
+        .admin-lock input {
+            background-color: #f5f5f5;
+            cursor: not-allowed;
+        }
+
+        .timestamp {
+            margin-top: 15px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 6px;
+            font-size: 0.9em;
+            color: #555;
+            border-left: 3px solid #3498db;
+        }
+
+        .timestamp strong {
+            color: #2c3e50;
+        }
+
+        .history-section {
+            margin-top: 30px;
+            padding: 25px;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .history-section h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            border-bottom: 2px solid #d4961f;
+            padding-bottom: 10px;
+        }
+
+        .history-item {
+            padding: 15px;
+            margin-bottom: 12px;
+            background: linear-gradient(145deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 6px;
+            border-left: 4px solid #d4961f;
+            font-size: 1em;
+        }
+
+        .history-item .ppm-value {
+            font-weight: 700;
+            color: #d4961f;
+            font-size: 1.3em;
+        }
+
+        .history-item .timestamp-text {
+            color: #666;
+            font-size: 0.95em;
+            margin-top: 8px;
+            line-height: 1.6;
+        }
+
+        .history-item .sample-from {
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: 1.05em;
+            margin-top: 5px;
+        }
+
+        .clear-history-btn {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            padding: 10px 20px;
+            font-size: 0.85em;
+            margin-top: 15px;
+        }
+
+        .lock-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #d4961f;
+            font-size: 1.2em;
+        }
+
+        .admin-btn {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            padding: 10px 24px;
+            font-size: 0.9em;
+            margin-top: 10px;
+            text-transform: none;
+            letter-spacing: 0.3px;
+        }
+
+        .admin-btn:hover {
+            box-shadow: 0 4px 15px rgba(44, 62, 80, 0.4);
+            background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
+        }
+
+        .admin-panel {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(4px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .admin-panel.show {
+            display: flex;
+        }
+
+        .admin-login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .admin-login-box h3 {
+            color: #1a1a1a;
+            margin-bottom: 25px;
+            text-align: center;
+            font-size: 1.6em;
+            font-weight: 700;
+        }
+
+        .close-btn {
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+            padding: 12px 24px;
+            font-size: 0.95em;
+            margin-left: 10px;
+        }
+
+        .admin-status {
+            position: fixed;
+            top: 25px;
+            right: 25px;
+            background: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+            font-weight: 600;
+            z-index: 999;
+            font-size: 0.95em;
+            border: 2px solid #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .admin-status.logged-in {
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+            color: white;
+            border-color: #27ae60;
+        }
+
+        .admin-status-text {
+            display: block;
+        }
+
+        .admin-status .admin-btn {
+            margin-top: 0;
+            padding: 8px 20px;
+            font-size: 0.85em;
+            width: 100%;
+        }
+
+        .logout-btn {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            padding: 6px 16px;
+            font-size: 0.85em;
+            margin-left: 12px;
+            margin-top: 0;
+            text-transform: none;
+            letter-spacing: 0.3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Admin Status Display -->
+        <div id="admin-status" class="admin-status">
+            <span class="admin-status-text">🔒 Not Logged In</span>
+            <button class="admin-btn" onclick="showAdminPanel()">🔐 Admin Access</button>
+        </div>
+
+        <!-- Admin Login Panel -->
+        <div id="admin-panel" class="admin-panel">
+            <div class="admin-login-box">
+                <h3>🔐 Admin Login</h3>
+                <div class="form-group">
+                    <label for="admin-username">Username:</label>
+                    <input type="text" id="admin-username" placeholder="Enter username">
+                </div>
+                <div class="form-group">
+                    <label for="admin-password">Password:</label>
+                    <input type="password" id="admin-password" placeholder="Enter password">
+                </div>
+                <button onclick="loginAdmin()">Login</button>
+                <button class="close-btn" onclick="closeAdminPanel()">Cancel</button>
+            </div>
+        </div>
+
+        <header>
+            <h1><span class="company-name">TFPPL</span> Starch Plant</h1>
+            <p class="subtitle">Advanced Analytical Laboratory • Maize Byproduct Analysis System</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('protein')">Protein Analysis (Kjeldahl)</button>
+            <button class="tab" onclick="switchTab('fat')">Fat Analysis</button>
+            <button class="tab" onclick="switchTab('so2')">SO2 Analysis (ppm)</button>
+            <button class="tab" onclick="switchTab('ash')">Ash Analysis</button>
+        </div>
+
+        <!-- Protein Calculator -->
+        <div id="protein" class="calculator-section active">
+            <h2>Protein Analysis - Kjeldahl Distillation Method</h2>
+            <div class="form-group">
+                <label for="protein-product">Select Maize Byproduct:</label>
+                <select id="protein-product">
+                    <option value="starch">Starch</option>
+                    <option value="gluten">Gluten</option>
+                    <option value="germ">Germ</option>
+                    <option value="fiber">Fiber</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="protein-basis">Calculation Basis:</label>
+                <select id="protein-basis" onchange="toggleMoistureField()">
+                    <option value="actual">On Actual Basis</option>
+                    <option value="dry">On Dry Basis</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <div class="form-group">
+                    <label for="protein-burette">Burette Reading (mL):</label>
+                    <input type="number" id="protein-burette" step="0.01" placeholder="Enter burette reading">
+                </div>
+                <div class="form-group">
+                    <label for="protein-blank">Blank Reading (mL):</label>
+                    <input type="number" id="protein-blank" step="0.01" placeholder="Enter blank reading">
+                </div>
+                <div class="form-group">
+                    <label for="protein-sample">Sample Weight (g):</label>
+                    <input type="number" id="protein-sample" step="0.0001" placeholder="Enter sample weight">
+                </div>
+                <div class="form-group admin-lock">
+                    <label for="protein-acid">Acid Normality (N): 🔒 Admin Only</label>
+                    <input type="number" id="protein-acid" step="0.0001" value="0.1" placeholder="Enter acid normality" readonly>
+                    <span class="lock-icon">🔒</span>
+                </div>
+            </div>
+            <div class="input-group" id="moisture-field" style="display: none;">
+                <div class="form-group">
+                    <label for="protein-moisture">Moisture % (for dry basis):</label>
+                    <input type="number" id="protein-moisture" step="0.01" placeholder="Enter moisture %">
+                </div>
+            </div>
+            <button class="admin-btn" onclick="adminLogin('acid')">Admin: Change Acid Normality</button>
+            <div id="protein-formula-display" class="info-text" style="margin-top: 20px;">
+                <strong>On Actual Basis Formula:</strong><br>
+                % Protein (Actual Basis) = [(Burette - Blank) × Acid Normality × 14.007 × Conversion Factor × 100] / (Sample Weight × 1000)
+            </div>
+            <button onclick="calculateProtein()">Calculate Protein %</button>
+            <div id="protein-result" class="result-box"></div>
+        </div>
+
+        <!-- Fat Calculator -->
+        <div id="fat" class="calculator-section">
+            <h2>Fat Analysis - Soxhlet Extraction Method</h2>
+            <div class="form-group">
+                <label for="fat-product">Select Maize Byproduct:</label>
+                <select id="fat-product">
+                    <option value="germ">Germ</option>
+                    <option value="fiber">Fiber</option>
+                    <option value="starch">Starch</option>
+                    <option value="gluten">Gluten</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <div class="form-group">
+                    <label for="fat-container">Empty Container Weight (g):</label>
+                    <input type="number" id="fat-container" step="0.0001" placeholder="Enter container weight">
+                </div>
+                <div class="form-group">
+                    <label for="fat-container-fat">Container + Fat Weight (g):</label>
+                    <input type="number" id="fat-container-fat" step="0.0001" placeholder="Enter container + fat weight">
+                </div>
+                <div class="form-group">
+                    <label for="fat-sample">Sample Weight (g):</label>
+                    <input type="number" id="fat-sample" step="0.0001" placeholder="Enter sample weight">
+                </div>
+            </div>
+            <p class="info-text">Formula: % Fat = [(Container + Fat - Container) / Sample Weight] × 100</p>
+            <button onclick="calculateFat()">Calculate Fat %</button>
+            <div id="fat-result" class="result-box"></div>
+        </div>
+
+        <!-- SO2 Calculator -->
+        <div id="so2" class="calculator-section">
+            <h2>SO2 Analysis - Sulfur Dioxide (ppm)</h2>
+            <div class="form-group">
+                <label for="so2-product">Sample From:</label>
+                <select id="so2-product">
+                    <option value="Preparation Tank">Preparation Tank</option>
+                    <option value="Steeping Vat">Steeping Vat</option>
+                    <option value="Storage Tank">Storage Tank</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <div class="form-group">
+                    <label for="so2-burette">Burette Reading (mL):</label>
+                    <input type="number" id="so2-burette" step="0.01" placeholder="Enter burette reading">
+                </div>
+                <div class="form-group admin-lock">
+                    <label for="so2-iodine">Iodine Normality (N): 🔒 Admin Only</label>
+                    <input type="number" id="so2-iodine" step="0.0001" value="0.01" placeholder="Enter iodine normality" readonly>
+                    <span class="lock-icon">🔒</span>
+                </div>
+            </div>
+            <button class="admin-btn" onclick="adminLogin('iodine')">Admin: Change Iodine Normality</button>
+            <p class="info-text">Formula: SO2 (ppm) = Burette Reading × Iodine Normality × 32.032 × 100</p>
+            <button onclick="calculateSO2()">Calculate SO2 (ppm)</button>
+            <div id="so2-result" class="result-box"></div>
+            
+            <!-- SO2 History Section -->
+            <div id="so2-history-section" style="display: none;">
+                <div class="history-section">
+                    <h3>📊 SO2 Measurement History (Last 10 Tests)</h3>
+                    <div id="so2-history"></div>
+                    <button class="clear-history-btn" onclick="clearSO2History()">Clear History</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ash Calculator -->
+        <div id="ash" class="calculator-section">
+            <h2>Ash Analysis - Incineration Method</h2>
+            <div class="form-group">
+                <label for="ash-product">Select Maize Byproduct:</label>
+                <select id="ash-product">
+                    <option value="starch">Starch</option>
+                    <option value="gluten">Gluten</option>
+                    <option value="germ">Germ</option>
+                    <option value="fiber">Fiber</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <div class="form-group">
+                    <label for="ash-container">Empty Container Weight (g):</label>
+                    <input type="number" id="ash-container" step="0.0001" placeholder="Enter container weight">
+                </div>
+                <div class="form-group">
+                    <label for="ash-container-ash">Container + Ash Weight (g):</label>
+                    <input type="number" id="ash-container-ash" step="0.0001" placeholder="Enter container + ash weight">
+                </div>
+                <div class="form-group">
+                    <label for="ash-sample">Sample Weight (g):</label>
+                    <input type="number" id="ash-sample" step="0.0001" placeholder="Enter sample weight">
+                </div>
+            </div>
+            <p class="info-text">Formula: % Ash = [(Container + Ash - Container) / Sample Weight] × 100</p>
+            <button onclick="calculateAsh()">Calculate Ash %</button>
+            <div id="ash-result" class="result-box"></div>
+        </div>
+    </div>
+
+    <script>
+        let isAdmin = false;
+        let so2History = [];
+
+        function showAdminPanel() {
+            if (isAdmin) {
+                alert('You are already logged in as Admin!');
+                return;
+            }
+            document.getElementById('admin-panel').classList.add('show');
+        }
+
+        function closeAdminPanel() {
+            document.getElementById('admin-panel').classList.remove('show');
+            document.getElementById('admin-username').value = '';
+            document.getElementById('admin-password').value = '';
+        }
+
+        function loginAdmin() {
+            const username = document.getElementById('admin-username').value;
+            const password = document.getElementById('admin-password').value;
+
+            // Admin credentials: username = "sumit123", password = "TFPPL@2026"
+            if (username === 'sumit123' && password === 'TFPPL@2026') {
+                isAdmin = true;
+                const statusDiv = document.getElementById('admin-status');
+                statusDiv.innerHTML = '<span class="admin-status-text">✓ Admin Logged In</span><button class="logout-btn" onclick="logoutAdmin()">Logout</button>';
+                statusDiv.classList.add('logged-in');
+                
+                // Unlock acid normality field
+                const acidInput = document.getElementById('protein-acid');
+                acidInput.removeAttribute('readonly');
+                acidInput.style.backgroundColor = 'white';
+                acidInput.style.cursor = 'text';
+                
+                // Unlock iodine normality field
+                const iodineInput = document.getElementById('so2-iodine');
+                iodineInput.removeAttribute('readonly');
+                iodineInput.style.backgroundColor = 'white';
+                iodineInput.style.cursor = 'text';
+                
+                closeAdminPanel();
+                alert('Welcome Admin! You can now modify restricted fields.');
+            } else {
+                alert('Invalid username or password!');
+            }
+        }
+
+        function logoutAdmin() {
+            isAdmin = false;
+            const statusDiv = document.getElementById('admin-status');
+            statusDiv.innerHTML = '<span class="admin-status-text">🔒 Not Logged In</span><button class="admin-btn" onclick="showAdminPanel()">🔐 Admin Access</button>';
+            statusDiv.classList.remove('logged-in');
+            
+            // Lock acid normality field again
+            const acidInput = document.getElementById('protein-acid');
+            acidInput.setAttribute('readonly', 'readonly');
+            acidInput.style.backgroundColor = '#f5f5f5';
+            acidInput.style.cursor = 'not-allowed';
+            
+            // Lock iodine normality field again
+            const iodineInput = document.getElementById('so2-iodine');
+            iodineInput.setAttribute('readonly', 'readonly');
+            iodineInput.style.backgroundColor = '#f5f5f5';
+            iodineInput.style.cursor = 'not-allowed';
+            
+            alert('You have been logged out.');
+        }
+
+        function adminLogin(field) {
+            if (!isAdmin) {
+                alert('Please login as Admin first!');
+                showAdminPanel();
+                return;
+            }
+        }
+
+        function switchTab(tab) {
+            const tabs = document.querySelectorAll('.tab');
+            const sections = document.querySelectorAll('.calculator-section');
+            
+            tabs.forEach(t => t.classList.remove('active'));
+            sections.forEach(s => s.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tab).classList.add('active');
+        }
+
+        function toggleMoistureField() {
+            const basis = document.getElementById('protein-basis').value;
+            const moistureField = document.getElementById('moisture-field');
+            const formulaDisplay = document.getElementById('protein-formula-display');
+            
+            if (basis === 'dry') {
+                moistureField.style.display = 'block';
+                formulaDisplay.innerHTML = `
+                    <strong>On Dry Basis Formula:</strong><br>
+                    % Protein (Dry Basis) = {[(Burette - Blank) × Acid Normality × 14.007 × Conversion Factor × 100] / (Sample Weight × 1000)} × [100 / (100 - Moisture %)]
+                `;
+            } else {
+                moistureField.style.display = 'none';
+                formulaDisplay.innerHTML = `
+                    <strong>On Actual Basis Formula:</strong><br>
+                    % Protein (Actual Basis) = [(Burette - Blank) × Acid Normality × 14.007 × Conversion Factor × 100] / (Sample Weight × 1000)
+                `;
+            }
+        }
+
+        function calculateProtein() {
+            const product = document.getElementById('protein-product').value;
+            const burette = parseFloat(document.getElementById('protein-burette').value);
+            const blank = parseFloat(document.getElementById('protein-blank').value);
+            const sample = parseFloat(document.getElementById('protein-sample').value);
+            const acidNormality = parseFloat(document.getElementById('protein-acid').value);
+            const basis = document.getElementById('protein-basis').value;
+            const moisture = parseFloat(document.getElementById('protein-moisture').value);
+
+            if (isNaN(burette) || isNaN(blank) || isNaN(sample) || isNaN(acidNormality)) {
+                alert('Please fill in all required fields with valid numbers');
+                return;
+            }
+
+            if (basis === 'dry' && isNaN(moisture)) {
+                alert('Please enter moisture % for dry basis calculation');
+                return;
+            }
+
+            if (sample <= 0) {
+                alert('Sample weight must be greater than 0');
+                return;
+            }
+
+            const conversionFactors = {
+                'starch': 6.25,
+                'gluten': 6.25,
+                'germ': 6.25,
+                'fiber': 6.25
+            };
+
+            const factor = conversionFactors[product];
+            const nitrogenPercent = ((burette - blank) * acidNormality * 14.007) / (sample * 10);
+            const proteinActual = nitrogenPercent * factor;
+            
+            let proteinFinal, basisText;
+            
+            if (basis === 'dry') {
+                proteinFinal = proteinActual * (100 / (100 - moisture));
+                basisText = 'On Dry Basis';
+            } else {
+                proteinFinal = proteinActual;
+                basisText = 'On Actual Basis';
+            }
+
+            const resultBox = document.getElementById('protein-result');
+            let resultHTML = `
+                <div class="result-item">
+                    <span class="result-label">Product:</span>
+                    <span class="result-value">${product.charAt(0).toUpperCase() + product.slice(1)}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Calculation Basis:</span>
+                    <span class="result-value">${basisText}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Nitrogen %:</span>
+                    <span class="result-value">${nitrogenPercent.toFixed(4)}%</span>
+                </div>
+            `;
+            
+            if (basis === 'dry') {
+                resultHTML += `
+                    <div class="result-item">
+                        <span class="result-label">Protein % (Actual):</span>
+                        <span class="result-value">${proteinActual.toFixed(4)}%</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Moisture %:</span>
+                        <span class="result-value">${moisture.toFixed(2)}%</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Protein % (Dry Basis):</span>
+                        <span class="result-value">${proteinFinal.toFixed(4)}%</span>
+                    </div>
+                `;
+            } else {
+                resultHTML += `
+                    <div class="result-item">
+                        <span class="result-label">Protein % (Actual Basis):</span>
+                        <span class="result-value">${proteinFinal.toFixed(4)}%</span>
+                    </div>
+                `;
+            }
+            
+            resultHTML += `
+                <div class="result-item">
+                    <span class="result-label">Conversion Factor:</span>
+                    <span class="result-value">${factor}</span>
+                </div>
+            `;
+            
+            resultBox.innerHTML = resultHTML;
+            resultBox.classList.add('show');
+        }
+
+        function calculateFat() {
+            const product = document.getElementById('fat-product').value;
+            const container = parseFloat(document.getElementById('fat-container').value);
+            const containerFat = parseFloat(document.getElementById('fat-container-fat').value);
+            const sample = parseFloat(document.getElementById('fat-sample').value);
+
+            if (isNaN(container) || isNaN(containerFat) || isNaN(sample)) {
+                alert('Please fill in all fields with valid numbers');
+                return;
+            }
+
+            if (sample <= 0) {
+                alert('Sample weight must be greater than 0');
+                return;
+            }
+
+            if (containerFat < container) {
+                alert('Container + Fat weight must be greater than empty container weight');
+                return;
+            }
+
+            const fatWeight = containerFat - container;
+            const fatPercent = (fatWeight / sample) * 100;
+
+            const resultBox = document.getElementById('fat-result');
+            resultBox.innerHTML = `
+                <div class="result-item">
+                    <span class="result-label">Product:</span>
+                    <span class="result-value">${product.charAt(0).toUpperCase() + product.slice(1)}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Fat Weight:</span>
+                    <span class="result-value">${fatWeight.toFixed(4)} g</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Fat %:</span>
+                    <span class="result-value">${fatPercent.toFixed(4)}%</span>
+                </div>
+            `;
+            resultBox.classList.add('show');
+        }
+
+        function calculateSO2() {
+            const product = document.getElementById('so2-product').value;
+            const burette = parseFloat(document.getElementById('so2-burette').value);
+            const iodineNormality = parseFloat(document.getElementById('so2-iodine').value);
+
+            if (isNaN(burette) || isNaN(iodineNormality)) {
+                alert('Please fill in all fields with valid numbers');
+                return;
+            }
+
+            // Formula: SO2 (ppm) = Burette Reading × Iodine Normality × 32.032 × 100
+            const so2ppm = burette * iodineNormality * 32.032 * 100;
+
+            // Get current date and time
+            const now = new Date();
+            const dateOptions = { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                weekday: 'long'
+            };
+            const timeOptions = {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true
+            };
+            const dateStr = now.toLocaleDateString('en-US', dateOptions);
+            const timeStr = now.toLocaleTimeString('en-US', timeOptions);
+
+            // Store in history (keep only last 10)
+            so2History.unshift({
+                ppm: so2ppm.toFixed(2),
+                date: dateStr,
+                time: timeStr,
+                burette: burette,
+                iodineNormality: iodineNormality,
+                sampleFrom: product
+            });
+
+            if (so2History.length > 10) {
+                so2History.pop();
+            }
+
+            const resultBox = document.getElementById('so2-result');
+            resultBox.innerHTML = `
+                <div class="result-item">
+                    <span class="result-label">Sample From:</span>
+                    <span class="result-value">${product}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">SO2 Concentration:</span>
+                    <span class="result-value">${so2ppm.toFixed(2)} ppm</span>
+                </div>
+                <div class="timestamp">
+                    <strong>📅 Test Date & Time:</strong><br>
+                    ${dateStr}<br>
+                    ${timeStr}
+                </div>
+            `;
+            resultBox.classList.add('show');
+
+            // Update history display
+            updateSO2History();
+        }
+
+        function updateSO2History() {
+            const historySection = document.getElementById('so2-history-section');
+            const historyContainer = document.getElementById('so2-history');
+
+            if (so2History.length === 0) {
+                historySection.style.display = 'none';
+                return;
+            }
+
+            historySection.style.display = 'block';
+            
+            let historyHTML = '';
+            so2History.forEach((item, index) => {
+                historyHTML += `
+                    <div class="history-item">
+                        <div><strong>#${index + 1}</strong> - <span class="ppm-value">${item.ppm} ppm</span></div>
+                        <div class="sample-from">📍 Sample From: ${item.sampleFrom}</div>
+                        <div class="timestamp-text">
+                            📅 ${item.date} at ${item.time}<br>
+                            📊 Burette: ${item.burette} mL | Iodine Normality: ${item.iodineNormality} N
+                        </div>
+                    </div>
+                `;
+            });
+
+            historyContainer.innerHTML = historyHTML;
+        }
+
+        function clearSO2History() {
+            if (confirm('Are you sure you want to clear all SO2 measurement history?')) {
+                so2History = [];
+                updateSO2History();
+                alert('History cleared successfully!');
+            }
+        }
+
+        function calculateAsh() {
+            const product = document.getElementById('ash-product').value;
+            const container = parseFloat(document.getElementById('ash-container').value);
+            const containerAsh = parseFloat(document.getElementById('ash-container-ash').value);
+            const sample = parseFloat(document.getElementById('ash-sample').value);
+
+            if (isNaN(container) || isNaN(containerAsh) || isNaN(sample)) {
+                alert('Please fill in all fields with valid numbers');
+                return;
+            }
+
+            if (sample <= 0) {
+                alert('Sample weight must be greater than 0');
+                return;
+            }
+
+            if (containerAsh < container) {
+                alert('Container + Ash weight must be greater than empty container weight');
+                return;
+            }
+
+            const ashWeight = containerAsh - container;
+            const ashPercent = (ashWeight / sample) * 100;
+
+            const resultBox = document.getElementById('ash-result');
+            resultBox.innerHTML = `
+                <div class="result-item">
+                    <span class="result-label">Product:</span>
+                    <span class="result-value">${product.charAt(0).toUpperCase() + product.slice(1)}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Ash Weight:</span>
+                    <span class="result-value">${ashWeight.toFixed(4)} g</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Ash %:</span>
+                    <span class="result-value">${ashPercent.toFixed(4)}%</span>
+                </div>
+            `;
+            resultBox.classList.add('show');
+        }
+    </script>
+</body>
+</html>
