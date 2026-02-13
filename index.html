@@ -1,0 +1,2264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TFPPL LAB - Process Intelligence</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
+            background: #f0f0eb;
+            min-height: 100vh;
+            color: #333;
+            padding: 0;
+            margin: 0;
+        }
+
+        /* Header */
+        .header {
+            background: #1a2332;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #d4a12a 0%, #b8902a 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(212, 161, 42, 0.3);
+        }
+
+        .logo-icon-inner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid white;
+            border-radius: 50%;
+        }
+
+        .logo-text h1 {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: 0.5px;
+        }
+
+        .logo-text h1 .highlight {
+            color: #d4a12a;
+        }
+
+        .admin-btn {
+            background: linear-gradient(135deg, #d4a12a 0%, #b8902a 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 0.9em;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 8px rgba(212, 161, 42, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .admin-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(212, 161, 42, 0.4);
+        }
+
+        .admin-btn::before {
+            content: '•';
+            font-size: 1.5em;
+        }
+
+        /* Content Container */
+        .content-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Section Title */
+        .section-title {
+            text-align: center;
+            margin: 40px 0 10px;
+        }
+
+        .section-title h2 {
+            font-size: 2.5em;
+            font-weight: 700;
+            color: #1e293b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .factor-label {
+            color: #d4a12a;
+            font-size: 1em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        /* Toggle Buttons */
+        .toggle-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            background: #e5e5e0;
+            padding: 6px;
+            border-radius: 50px;
+        }
+
+        .toggle-btn {
+            flex: 1;
+            padding: 12px 20px;
+            background: transparent;
+            border: none;
+            border-radius: 50px;
+            color: #64748b;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .toggle-btn.active {
+            background: linear-gradient(135deg, #d4a12a 0%, #b8902a 100%);
+            color: white;
+            box-shadow: 0 2px 8px rgba(212, 161, 42, 0.3);
+        }
+
+        /* Form Section */
+        .form-section {
+            background: #fafaf8;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid #e0e0dc;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .form-label {
+            color: #8B98A8;
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            display: block;
+            font-weight: 600;
+        }
+
+        .form-control {
+            width: 100%;
+            background: #ffffff;
+            border: 1px solid #d4d4d0;
+            border-radius: 8px;
+            padding: 14px;
+            color: #1a1a1a;
+            font-size: 1em;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            appearance: none;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #d4a12a;
+            background: white;
+        }
+
+        select.form-control {
+            background-color: #ffffff;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 20px;
+            padding-right: 40px;
+        }
+
+        /* Calculate Button */
+        .calculate-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #d4a12a 0%, #b8902a 100%);
+            color: white;
+            border: none;
+            padding: 18px;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 12px rgba(212, 161, 42, 0.3);
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(212, 161, 42, 0.4);
+        }
+
+        .calculate-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Result Box */
+        .result-box {
+            background: linear-gradient(135deg, #fef9e7 0%, #fef5d4 100%);
+            border-radius: 16px;
+            padding: 25px;
+            margin-top: 25px;
+            display: none;
+            border: 2px solid #d4a12a;
+        }
+
+        .result-box.show {
+            display: block;
+            animation: slideUp 0.4s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(212, 161, 42, 0.15);
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-label {
+            color: #64748b;
+            font-size: 0.95em;
+            font-weight: 500;
+        }
+
+        .result-value {
+            color: #d4a12a;
+            font-size: 1.3em;
+            font-weight: 700;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0;
+            padding: 0;
+            margin: 0;
+            background: white;
+            border-bottom: 1px solid #e5e5e0;
+        }
+
+        .tab {
+            padding: 16px 10px;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            color: #64748b;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .tab.active {
+            background: transparent;
+            color: #d4a12a;
+            border-bottom-color: #d4a12a;
+        }
+
+        .tab:hover {
+            color: #d4a12a;
+        }
+
+        .calculator-section {
+            display: none;
+        }
+
+        .calculator-section.active {
+            display: block;
+        }
+
+        /* Timestamp */
+        .timestamp {
+            background: #fef9e7;
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 15px;
+            font-size: 0.9em;
+            color: #1e293b;
+            border-left: 3px solid #d4a12a;
+        }
+
+        .timestamp strong {
+            color: #d4a12a;
+        }
+
+        /* History Section */
+        .history-section {
+            margin-top: 30px;
+            display: none;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .history-header h3 {
+            color: #1e293b;
+            font-size: 1.2em;
+        }
+
+        .clear-history-btn {
+            background: rgba(239, 68, 68, 0.1);
+            color: #dc2626;
+            border: 1px solid #dc2626;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .clear-history-btn:hover {
+            background: rgba(239, 68, 68, 0.2);
+        }
+
+        .history-item {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 3px solid #d4a12a;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .ppm-value {
+            color: #d4a12a;
+            font-weight: 700;
+            font-size: 1.1em;
+        }
+
+        .sample-from {
+            color: #64748b;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .timestamp-text {
+            color: #94a3b8;
+            font-size: 0.85em;
+            margin-top: 8px;
+            line-height: 1.5;
+        }
+
+        /* Info Text */
+        .info-text {
+            background: #fef9e7;
+            border-left: 3px solid #d4a12a;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 0.9em;
+            color: #64748b;
+            font-style: italic;
+        }
+
+        /* Formula Display */
+        .formula-display {
+            background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%);
+            border-left: 3px solid #3b82f6;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-size: 0.85em;
+            color: #1e40af;
+        }
+
+        .formula-display strong {
+            color: #1e40af;
+            font-weight: 700;
+        }
+
+        /* Admin Lock Modal */
+        .admin-lock {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .admin-lock.show {
+            display: flex;
+        }
+
+        .admin-modal {
+            background: white;
+            border-radius: 20px;
+            padding: 35px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border: 1px solid #e5e5e0;
+        }
+
+        .admin-modal h3 {
+            color: #1e293b;
+            margin-bottom: 25px;
+            font-size: 1.5em;
+            text-align: center;
+        }
+
+        .admin-modal input {
+            width: 100%;
+            padding: 15px;
+            background: #fafaf8;
+            border: 2px solid #e5e5e0;
+            border-radius: 12px;
+            color: #1e293b;
+            font-size: 1em;
+            margin-bottom: 20px;
+        }
+
+        .admin-modal input:focus {
+            outline: none;
+            border-color: #d4a12a;
+        }
+
+        .admin-modal-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .admin-modal button {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .admin-unlock-btn {
+            background: linear-gradient(135deg, #d4a12a 0%, #b8902a 100%);
+            color: white;
+        }
+
+        .admin-cancel-btn {
+            background: #e5e5e0;
+            color: #64748b;
+        }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            .header {
+                padding: 15px;
+            }
+
+            .logo-text h1 {
+                font-size: 1.2em;
+            }
+
+            .logo-text p {
+                font-size: 0.65em;
+            }
+
+            .admin-btn {
+                padding: 8px 16px;
+                font-size: 0.85em;
+            }
+
+            .section-title h2 {
+                font-size: 2em;
+            }
+
+            .content-container {
+                padding: 0 15px;
+            }
+
+            .form-section {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .logo-icon {
+                width: 40px;
+                height: 40px;
+            }
+
+            .logo-icon-inner {
+                width: 20px;
+                height: 20px;
+            }
+
+            .logo-text h1 {
+                font-size: 1em;
+            }
+
+            .logo-text p {
+                font-size: 0.6em;
+            }
+
+            .admin-btn {
+                padding: 6px 12px;
+                font-size: 0.8em;
+            }
+
+            .section-title h2 {
+                font-size: 1.8em;
+            }
+            
+            .tab {
+                font-size: 0.85em;
+                padding: 14px 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="logo-section">
+            <div class="logo-icon">
+                <span style="font-size: 28px;">🌽</span>
+            </div>
+            <div class="logo-text">
+                <h1>STARCH PROCESS <span class="highlight">LAB</span></h1>
+            </div>
+        </div>
+        <button class="admin-btn" onclick="showAdminPanel()">Admin Panel</button>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+        <div class="tab active" onclick="switchTab('protein')">Protein</div>
+        <div class="tab" onclick="switchTab('fat')">Fat</div>
+        <div class="tab" onclick="switchTab('so2')">SO2</div>
+        <div class="tab" onclick="switchTab('ash')">Ash</div>
+    </div>
+
+    <div class="content-container">
+        <!-- Protein Calculator -->
+        <div id="protein-calculator" class="calculator-section active">
+            <div class="section-title">
+                <h2>PROTEIN</h2>
+            </div>
+            <div class="section-subtitle">
+                <span class="factor-label">FACTOR: 6.25</span>
+            </div>
+
+            <div class="toggle-container">
+                <button class="toggle-btn active" id="actual-btn" onclick="switchBasis('actual')">ACTUAL</button>
+                <button class="toggle-btn" id="dry-btn" onclick="switchBasis('dry')">DRY</button>
+            </div>
+
+            <div class="form-section">
+                <label class="form-label">Maize Byproduct</label>
+                <select id="protein-product" class="form-control">
+                    <option value="starch">Starch</option>
+                    <option value="gluten">Gluten</option>
+                    <option value="germ">Germ</option>
+                    <option value="fiber">Fiber</option>
+                </select>
+
+                <label class="form-label">Burette Reading (ML)</label>
+                <input type="number" id="protein-burette" class="form-control" placeholder="0.00" step="0.01">
+
+                <label class="form-label">Blank Reading (ML) 🔒</label>
+                <input type="number" id="protein-blank" class="form-control" value="0.2" step="0.01" readonly style="background: #f0f0f0; cursor: not-allowed;">
+
+                <label class="form-label">Sample Weight (G)</label>
+                <input type="number" id="protein-sample" class="form-control" placeholder="0.00" step="0.01">
+
+                <label class="form-label">H2SO4 Normality (N) 🔒</label>
+                <input type="number" id="protein-normality" class="form-control" value="0.1" step="0.0001" readonly>
+
+                <div id="moisture-group" style="display: none;">
+                    <label class="form-label">Moisture %</label>
+                    <input type="number" id="protein-moisture" class="form-control" placeholder="0.00" step="0.01">
+                </div>
+
+                <div class="formula-display">
+                    <strong>Formula (Actual):</strong> Protein % = [(Burette - Blank) × Normality × 14.007 × 100 × 6.25] / (Sample Weight × 1000)<br><br>
+                    <strong>Formula (Dry):</strong> Protein % (Dry) = [Protein % (Actual) × 100] / (100 - Moisture %)
+                </div>
+
+                <button class="calculate-btn" onclick="calculateProtein()">Calculate</button>
+            </div>
+
+            <div id="protein-result" class="result-box"></div>
+
+            <!-- Protein History Section -->
+            <div id="protein-history-section" class="history-section">
+                <div class="history-header">
+                    <h3>📊 Protein Calculation History</h3>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="clear-history-btn" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); border-color: #3b82f6;" onclick="downloadProteinReport()">📥 Download</button>
+                        <button class="clear-history-btn" onclick="clearProteinHistory()">Clear All</button>
+                    </div>
+                </div>
+                <div id="protein-history"></div>
+            </div>
+        </div>
+
+        <!-- Fat Calculator -->
+        <div id="fat-calculator" class="calculator-section">
+            <div class="section-title">
+                <h2>FAT</h2>
+            </div>
+
+            <div class="form-section">
+                <label class="form-label">Maize Byproduct</label>
+                <select id="fat-product" class="form-control">
+                    <option value="starch">Starch</option>
+                    <option value="gluten">Gluten</option>
+                    <option value="germ">Germ</option>
+                    <option value="fiber">Fiber</option>
+                </select>
+
+                <label class="form-label">Empty Container Weight (G)</label>
+                <input type="number" id="fat-container" class="form-control" placeholder="0.00" step="0.01">
+
+                <label class="form-label">Container + Fat Weight (G)</label>
+                <input type="number" id="fat-container-fat" class="form-control" placeholder="0.00" step="0.01">
+
+                <label class="form-label">Sample Weight (G)</label>
+                <input type="number" id="fat-sample" class="form-control" placeholder="0.00" step="0.01">
+
+                <button class="calculate-btn" onclick="calculateFat()">Calculate</button>
+            </div>
+
+            <div id="fat-result" class="result-box"></div>
+
+            <!-- Fat History Section -->
+            <div id="fat-history-section" class="history-section">
+                <div class="history-header">
+                    <h3>📊 Fat Calculation History</h3>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="clear-history-btn" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); border-color: #3b82f6;" onclick="downloadFatReport()">📥 Download</button>
+                        <button class="clear-history-btn" onclick="clearFatHistory()">Clear All</button>
+                    </div>
+                </div>
+                <div id="fat-history"></div>
+            </div>
+        </div>
+
+        <!-- SO2 Calculator -->
+        <div id="so2-calculator" class="calculator-section">
+            <div class="section-title">
+                <h2>SO2</h2>
+            </div>
+
+            <div class="form-section">
+                <label class="form-label">Sample From</label>
+                <select id="so2-product" class="form-control">
+                    <option value="">Select Sample Source</option>
+                    <option value="Preparation Tank">Preparation Tank</option>
+                    <option value="Steeping Vat">Steeping Vat</option>
+                    <option value="Storage Tank">Storage Tank</option>
+                </select>
+
+                <label class="form-label">Burette Reading (ML)</label>
+                <input type="number" id="so2-burette" class="form-control" placeholder="0.00" step="0.01">
+
+                <label class="form-label">Iodine Normality 🔒</label>
+                <input type="number" id="so2-iodine" class="form-control" value="0.1" step="0.0001" readonly>
+
+                <div class="formula-display">
+                    <strong>Formula:</strong> SO₂ (ppm) = Burette Reading × Iodine Normality × 32.032 × 100
+                </div>
+
+                <button class="calculate-btn" onclick="calculateSO2()">Calculate</button>
+            </div>
+
+            <div id="so2-result" class="result-box"></div>
+
+            <div id="so2-history-section" class="history-section">
+                <div class="history-header">
+                    <h3>📊 Measurement History</h3>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="clear-history-btn" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); border-color: #3b82f6;" onclick="downloadSO2Report()">📥 Download</button>
+                        <button class="clear-history-btn" onclick="clearSO2History()">Clear All</button>
+                    </div>
+                </div>
+                <div id="so2-history"></div>
+            </div>
+
+            <!-- Admin Normality Settings -->
+            <div id="normality-settings" style="display: none; margin-top: 30px;">
+                <div style="background: white; border-radius: 12px; padding: 25px; border: 1px solid #e0e0dc;">
+                    <h3 style="color: #1e293b; margin-bottom: 20px; font-size: 1.2em;">⚙️ Change Normality Settings</h3>
+                    
+                    <div class="info-text" style="margin-bottom: 20px;">
+                        ℹ️ <strong>Important:</strong> Normality values are saved in your browser's local storage. Each browser/device has separate storage. If you use Chrome, Firefox, Safari, or access from different devices, you'll need to set normality values in each one.
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label class="form-label">H2SO4 Normality (N) - for Protein</label>
+                        <input type="number" id="admin-protein-normality" class="form-control" value="0.1" step="0.0001">
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label class="form-label">Iodine Normality (N) - for SO2</label>
+                        <input type="number" id="admin-so2-normality" class="form-control" value="0.1" step="0.0001">
+                    </div>
+                    
+                    <button class="calculate-btn" onclick="saveNormality()">Save Normality Values</button>
+                    
+                    <hr style="margin: 30px 0; border: none; border-top: 1px solid #e0e0dc;">
+                    
+                    <h3 style="color: #1e293b; margin-bottom: 20px; font-size: 1.2em;">📱 Share Data Across Devices</h3>
+                    
+                    <div class="info-text" style="margin-bottom: 20px; background: #e0f2fe; border-left-color: #3b82f6;">
+                        💡 <strong>Tip:</strong> Export your data to share it across all devices. After exporting, you can import the file on any other device/browser to sync your history and settings.
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <button class="calculate-btn" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);" onclick="exportAllData()">
+                            📤 Export Data
+                        </button>
+                        <button class="calculate-btn" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);" onclick="document.getElementById('import-file').click()">
+                            📥 Import Data
+                        </button>
+                    </div>
+                    <input type="file" id="import-file" accept=".json" style="display: none;" onchange="importAllData(event)">
+                </div>
+            </div>
+        </div>
+
+        <!-- Ash Calculator -->
+        <div id="ash-calculator" class="calculator-section">
+            <div class="section-title">
+                <h2>ASH</h2>
+            </div>
+
+            <div class="form-section">
+                <label class="form-label">Maize Byproduct</label>
+                <select id="ash-product" class="form-control">
+                    <option value="starch">Starch</option>
+                    <option value="gluten">Gluten</option>
+                    <option value="germ">Germ</option>
+                    <option value="fiber">Fiber</option>
+                </select>
+
+                <label class="form-label">Empty Container Weight (G)</label>
+                <input type="number" id="ash-container" class="form-control" placeholder="0.00" step="0.01">
+
+                <label class="form-label">Container + Ash Weight (G)</label>
+                <input type="number" id="ash-container-ash" class="form-control" placeholder="0.00" step="0.01">
+
+                <label class="form-label">Sample Weight (G)</label>
+                <input type="number" id="ash-sample" class="form-control" placeholder="0.00" step="0.01">
+
+                <button class="calculate-btn" onclick="calculateAsh()">Calculate</button>
+            </div>
+
+            <div id="ash-result" class="result-box"></div>
+
+            <!-- Ash History Section -->
+            <div id="ash-history-section" class="history-section">
+                <div class="history-header">
+                    <h3>📊 Ash Calculation History</h3>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="clear-history-btn" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); border-color: #3b82f6;" onclick="downloadAshReport()">📥 Download</button>
+                        <button class="clear-history-btn" onclick="clearAshHistory()">Clear All</button>
+                    </div>
+                </div>
+                <div id="ash-history"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Lock Modal -->
+    <div id="admin-lock" class="admin-lock">
+        <div class="admin-modal">
+            <h3>🔐 Admin Access</h3>
+            <input type="password" id="admin-password" placeholder="Enter admin password">
+            <div class="admin-modal-buttons">
+                <button class="admin-cancel-btn" onclick="hideAdminPanel()">Cancel</button>
+                <button class="admin-unlock-btn" onclick="checkAdminPassword()">Unlock</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load data from localStorage on page load
+        let so2History = JSON.parse(localStorage.getItem('so2History')) || [];
+        let proteinHistory = JSON.parse(localStorage.getItem('proteinHistory')) || [];
+        let fatHistory = JSON.parse(localStorage.getItem('fatHistory')) || [];
+        let ashHistory = JSON.parse(localStorage.getItem('ashHistory')) || [];
+        let isAdminLoggedIn = JSON.parse(localStorage.getItem('isAdminLoggedIn')) || false;
+        
+        // Load saved normality values
+        let savedProteinNormality = localStorage.getItem('proteinNormality') || '0.1';
+        let savedSO2Normality = localStorage.getItem('so2Normality') || '0.1';
+        
+        // Initialize page with saved values
+        window.addEventListener('DOMContentLoaded', function() {
+            // Set blank reading to 0.2 (locked value)
+            document.getElementById('protein-blank').value = '0.2';
+            
+            // Set normality values from localStorage
+            document.getElementById('protein-normality').value = savedProteinNormality;
+            document.getElementById('so2-iodine').value = savedSO2Normality;
+            
+            // Update all history displays
+            updateSO2History();
+            updateProteinHistory();
+            updateFatHistory();
+            updateAshHistory();
+            
+            // If admin was logged in, keep fields editable and show settings
+            if (isAdminLoggedIn) {
+                document.getElementById('protein-normality').removeAttribute('readonly');
+                document.getElementById('so2-iodine').removeAttribute('readonly');
+                document.getElementById('normality-settings').style.display = 'block';
+                document.getElementById('admin-protein-normality').value = savedProteinNormality;
+                document.getElementById('admin-so2-normality').value = savedSO2Normality;
+            }
+        });
+
+        // Tab Switching
+        function switchTab(tabName) {
+            // Update tab buttons
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Update calculator sections
+            const sections = document.querySelectorAll('.calculator-section');
+            sections.forEach(section => section.classList.remove('active'));
+            document.getElementById(tabName + '-calculator').classList.add('active');
+        }
+
+        // Protein Basis Switching
+        function switchBasis(basis) {
+            const actualBtn = document.getElementById('actual-btn');
+            const dryBtn = document.getElementById('dry-btn');
+            const moistureGroup = document.getElementById('moisture-group');
+
+            if (basis === 'actual') {
+                actualBtn.classList.add('active');
+                dryBtn.classList.remove('active');
+                moistureGroup.style.display = 'none';
+            } else {
+                actualBtn.classList.remove('active');
+                dryBtn.classList.add('active');
+                moistureGroup.style.display = 'block';
+            }
+        }
+
+        // Admin Panel
+        function showAdminPanel() {
+            document.getElementById('admin-lock').classList.add('show');
+        }
+
+        function hideAdminPanel() {
+            document.getElementById('admin-lock').classList.remove('show');
+            document.getElementById('admin-password').value = '';
+        }
+
+        function checkAdminPassword() {
+            const password = document.getElementById('admin-password').value;
+            const correctPassword = 'admin123';
+            
+            if (password === correctPassword) {
+                isAdminLoggedIn = true;
+                localStorage.setItem('isAdminLoggedIn', JSON.stringify(true));
+                
+                // Enable normality fields
+                document.getElementById('protein-normality').removeAttribute('readonly');
+                document.getElementById('so2-iodine').removeAttribute('readonly');
+                
+                // Show normality settings section
+                document.getElementById('normality-settings').style.display = 'block';
+                document.getElementById('admin-protein-normality').value = savedProteinNormality;
+                document.getElementById('admin-so2-normality').value = savedSO2Normality;
+                
+                alert('✅ Admin access granted!\n\nYou can now:\n• Edit H2SO4 Normality (Protein)\n• Edit Iodine Normality (SO2)\n• Use "Change Normality Settings" section below\n\nPassword: admin123');
+                hideAdminPanel();
+            } else {
+                alert('❌ Incorrect password!\n\nPlease contact your administrator.');
+                document.getElementById('admin-password').value = '';
+            }
+        }
+        
+        // Save Normality Function
+        function saveNormality() {
+            const proteinNormality = document.getElementById('admin-protein-normality').value;
+            const so2Normality = document.getElementById('admin-so2-normality').value;
+            
+            if (!proteinNormality || !so2Normality) {
+                alert('Please enter valid normality values');
+                return;
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('proteinNormality', proteinNormality);
+            localStorage.setItem('so2Normality', so2Normality);
+            
+            // Update the actual input fields
+            document.getElementById('protein-normality').value = proteinNormality;
+            document.getElementById('so2-iodine').value = so2Normality;
+            
+            // Update saved values
+            savedProteinNormality = proteinNormality;
+            savedSO2Normality = so2Normality;
+            
+            // Logout admin and hide section
+            isAdminLoggedIn = false;
+            localStorage.setItem('isAdminLoggedIn', JSON.stringify(false));
+            
+            // Make normality fields readonly again
+            document.getElementById('protein-normality').setAttribute('readonly', 'readonly');
+            document.getElementById('so2-iodine').setAttribute('readonly', 'readonly');
+            
+            // Hide normality settings section
+            document.getElementById('normality-settings').style.display = 'none';
+            
+            alert('✅ Normality values saved successfully!\n\nH2SO4 Normality: ' + proteinNormality + ' N\nIodine Normality: ' + so2Normality + ' N\n\nYou have been logged out.\n\n⚠️ NOTE: These values are saved in THIS BROWSER only.\nIf you open the website in a different browser or device, you will need to set the normality values again in that browser.');
+        }
+
+        // Protein Calculator
+        function calculateProtein() {
+            const product = document.getElementById('protein-product').value;
+            const burette = parseFloat(document.getElementById('protein-burette').value);
+            const blank = parseFloat(document.getElementById('protein-blank').value);
+            const sample = parseFloat(document.getElementById('protein-sample').value);
+            const normality = parseFloat(document.getElementById('protein-normality').value);
+            const moisture = parseFloat(document.getElementById('protein-moisture').value) || 0;
+            const basis = document.getElementById('actual-btn').classList.contains('active') ? 'actual' : 'dry';
+
+            if (isNaN(burette) || isNaN(blank) || isNaN(sample) || isNaN(normality)) {
+                alert('Please fill in all fields with valid numbers');
+                return;
+            }
+
+            if (sample <= 0) {
+                alert('Sample weight must be greater than 0');
+                return;
+            }
+
+            if (basis === 'dry' && (isNaN(moisture) || moisture < 0 || moisture >= 100)) {
+                alert('Please enter a valid moisture percentage (0-100)');
+                return;
+            }
+
+            const factor = 6.25;
+            const nitrogenPercent = ((burette - blank) * normality * 14.007 * 100) / (sample * 1000);
+            const proteinActual = nitrogenPercent * factor;
+
+            let proteinFinal = proteinActual;
+            if (basis === 'dry') {
+                proteinFinal = (proteinActual * 100) / (100 - moisture);
+            }
+
+            const resultBox = document.getElementById('protein-result');
+            const basisText = basis === 'dry' ? 'Dry Basis' : 'Actual Basis';
+
+            let resultHTML = `
+                <div class="result-item">
+                    <span class="result-label">Product:</span>
+                    <span class="result-value">${product.charAt(0).toUpperCase() + product.slice(1)}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Calculation Basis:</span>
+                    <span class="result-value">${basisText}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">H2SO4 Normality:</span>
+                    <span class="result-value">${normality} N</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Nitrogen %:</span>
+                    <span class="result-value">${nitrogenPercent.toFixed(4)}%</span>
+                </div>
+            `;
+
+            if (basis === 'dry') {
+                resultHTML += `
+                    <div class="result-item">
+                        <span class="result-label">Protein % (Actual):</span>
+                        <span class="result-value">${proteinActual.toFixed(4)}%</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Moisture %:</span>
+                        <span class="result-value">${moisture.toFixed(2)}%</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Protein % (Dry Basis):</span>
+                        <span class="result-value">${proteinFinal.toFixed(4)}%</span>
+                    </div>
+                `;
+            } else {
+                resultHTML += `
+                    <div class="result-item">
+                        <span class="result-label">Protein % (Actual Basis):</span>
+                        <span class="result-value">${proteinFinal.toFixed(4)}%</span>
+                    </div>
+                `;
+            }
+
+            resultHTML += `
+                <div class="result-item">
+                    <span class="result-label">Conversion Factor:</span>
+                    <span class="result-value">${factor}</span>
+                </div>
+            `;
+
+            resultBox.innerHTML = resultHTML;
+            resultBox.classList.add('show');
+            
+            // Add save button after showing results
+            const saveButtonHTML = `
+                <button class="calculate-btn" style="margin-top: 15px; background: linear-gradient(135deg, #10b981 0%, #059669 100%);" onclick="saveProteinCalculation()">
+                    💾 Save This Calculation
+                </button>
+            `;
+            resultBox.innerHTML += saveButtonHTML;
+            
+            // Store current calculation data for saving
+            window.currentProteinCalculation = {
+                product: product,
+                burette: burette,
+                blank: blank,
+                sample: sample,
+                normality: normality,
+                moisture: moisture,
+                basis: basisText,
+                nitrogenPercent: nitrogenPercent.toFixed(4),
+                proteinActual: proteinActual.toFixed(4),
+                proteinFinal: proteinFinal.toFixed(4),
+                factor: factor
+            };
+        }
+        
+        // Save Protein Calculation
+        function saveProteinCalculation() {
+            if (!window.currentProteinCalculation) {
+                alert('No calculation to save!');
+                return;
+            }
+            
+            const calc = window.currentProteinCalculation;
+            
+            // Get current date and time
+            const now = new Date();
+            const dateOptions = { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                weekday: 'long'
+            };
+            const timeOptions = {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true
+            };
+            const dateStr = now.toLocaleDateString('en-US', dateOptions);
+            const timeStr = now.toLocaleTimeString('en-US', timeOptions);
+            
+            // Add to history
+            proteinHistory.unshift({
+                product: calc.product,
+                burette: calc.burette,
+                blank: calc.blank,
+                sample: calc.sample,
+                normality: calc.normality,
+                moisture: calc.moisture,
+                basis: calc.basis,
+                nitrogenPercent: calc.nitrogenPercent,
+                proteinActual: calc.proteinActual,
+                proteinFinal: calc.proteinFinal,
+                factor: calc.factor,
+                date: dateStr,
+                time: timeStr,
+                timestamp: now.getTime()
+            });
+            
+            // Keep only last 10
+            if (proteinHistory.length > 10) {
+                proteinHistory.pop();
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('proteinHistory', JSON.stringify(proteinHistory));
+            
+            // Update display
+            updateProteinHistory();
+            
+            alert('✅ Calculation saved successfully!\n\n📅 ' + dateStr + '\n🕐 ' + timeStr);
+        }
+        
+        // Update Protein History Display
+        function updateProteinHistory() {
+            const historySection = document.getElementById('protein-history-section');
+            const historyContainer = document.getElementById('protein-history');
+
+            if (proteinHistory.length === 0) {
+                historySection.style.display = 'none';
+                return;
+            }
+
+            historySection.style.display = 'block';
+
+            let historyHTML = '';
+            proteinHistory.forEach((item, index) => {
+                historyHTML += `
+                    <div class="history-item">
+                        <div><strong>#${index + 1}</strong> - <span class="ppm-value">${item.product.charAt(0).toUpperCase() + item.product.slice(1)} - ${item.proteinFinal}% Protein (${item.basis})</span></div>
+                        <div class="sample-from">📍 Burette: ${item.burette} mL | Blank: ${item.blank} mL | Sample: ${item.sample} g</div>
+                        <div class="sample-from">🧪 Normality: ${item.normality} N | Nitrogen: ${item.nitrogenPercent}%</div>
+                        <div class="timestamp-text">
+                            📅 ${item.date} at ${item.time}
+                        </div>
+                    </div>
+                `;
+            });
+
+            historyContainer.innerHTML = historyHTML;
+        }
+        
+        // Clear Protein History
+        function clearProteinHistory() {
+            if (confirm('Are you sure you want to clear all protein calculation history?')) {
+                proteinHistory = [];
+                localStorage.setItem('proteinHistory', JSON.stringify(proteinHistory));
+                updateProteinHistory();
+                alert('History cleared successfully!');
+            }
+        }
+
+        // Fat Calculator
+        function calculateFat() {
+            const product = document.getElementById('fat-product').value;
+            const container = parseFloat(document.getElementById('fat-container').value);
+            const containerFat = parseFloat(document.getElementById('fat-container-fat').value);
+            const sample = parseFloat(document.getElementById('fat-sample').value);
+
+            if (isNaN(container) || isNaN(containerFat) || isNaN(sample)) {
+                alert('Please fill in all fields with valid numbers');
+                return;
+            }
+
+            if (sample <= 0) {
+                alert('Sample weight must be greater than 0');
+                return;
+            }
+
+            if (containerFat < container) {
+                alert('Container + Fat weight must be greater than empty container weight');
+                return;
+            }
+
+            const fatWeight = containerFat - container;
+            const fatPercent = (fatWeight / sample) * 100;
+
+            const resultBox = document.getElementById('fat-result');
+            resultBox.innerHTML = `
+                <div class="result-item">
+                    <span class="result-label">Product:</span>
+                    <span class="result-value">${product.charAt(0).toUpperCase() + product.slice(1)}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Fat Weight:</span>
+                    <span class="result-value">${fatWeight.toFixed(4)} g</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Fat %:</span>
+                    <span class="result-value">${fatPercent.toFixed(4)}%</span>
+                </div>
+            `;
+            resultBox.classList.add('show');
+            
+            // Add save button
+            const saveButtonHTML = `
+                <button class="calculate-btn" style="margin-top: 15px; background: linear-gradient(135deg, #10b981 0%, #059669 100%);" onclick="saveFatCalculation()">
+                    💾 Save This Calculation
+                </button>
+            `;
+            resultBox.innerHTML += saveButtonHTML;
+            
+            // Store current calculation data for saving
+            window.currentFatCalculation = {
+                product: product,
+                container: container,
+                containerFat: containerFat,
+                sample: sample,
+                fatWeight: fatWeight.toFixed(4),
+                fatPercent: fatPercent.toFixed(4)
+            };
+        }
+        
+        // Save Fat Calculation
+        function saveFatCalculation() {
+            if (!window.currentFatCalculation) {
+                alert('No calculation to save!');
+                return;
+            }
+            
+            const calc = window.currentFatCalculation;
+            
+            // Get current date and time
+            const now = new Date();
+            const dateOptions = { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                weekday: 'long'
+            };
+            const timeOptions = {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true
+            };
+            const dateStr = now.toLocaleDateString('en-US', dateOptions);
+            const timeStr = now.toLocaleTimeString('en-US', timeOptions);
+            
+            // Add to history
+            fatHistory.unshift({
+                product: calc.product,
+                container: calc.container,
+                containerFat: calc.containerFat,
+                sample: calc.sample,
+                fatWeight: calc.fatWeight,
+                fatPercent: calc.fatPercent,
+                date: dateStr,
+                time: timeStr,
+                timestamp: now.getTime()
+            });
+            
+            // Keep only last 10
+            if (fatHistory.length > 10) {
+                fatHistory.pop();
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('fatHistory', JSON.stringify(fatHistory));
+            
+            // Update display
+            updateFatHistory();
+            
+            alert('✅ Calculation saved successfully!\n\n📅 ' + dateStr + '\n🕐 ' + timeStr);
+        }
+        
+        // Update Fat History Display
+        function updateFatHistory() {
+            const historySection = document.getElementById('fat-history-section');
+            const historyContainer = document.getElementById('fat-history');
+
+            if (fatHistory.length === 0) {
+                historySection.style.display = 'none';
+                return;
+            }
+
+            historySection.style.display = 'block';
+
+            let historyHTML = '';
+            fatHistory.forEach((item, index) => {
+                historyHTML += `
+                    <div class="history-item">
+                        <div><strong>#${index + 1}</strong> - <span class="ppm-value">${item.product.charAt(0).toUpperCase() + item.product.slice(1)} - ${item.fatPercent}% Fat</span></div>
+                        <div class="sample-from">📍 Container: ${item.container} g | Container+Fat: ${item.containerFat} g | Sample: ${item.sample} g</div>
+                        <div class="sample-from">🧪 Fat Weight: ${item.fatWeight} g</div>
+                        <div class="timestamp-text">
+                            📅 ${item.date} at ${item.time}
+                        </div>
+                    </div>
+                `;
+            });
+
+            historyContainer.innerHTML = historyHTML;
+        }
+        
+        // Clear Fat History
+        function clearFatHistory() {
+            if (confirm('Are you sure you want to clear all fat calculation history?')) {
+                fatHistory = [];
+                localStorage.setItem('fatHistory', JSON.stringify(fatHistory));
+                updateFatHistory();
+                alert('History cleared successfully!');
+            }
+        }
+
+        // SO2 Calculator
+        function calculateSO2() {
+            const product = document.getElementById('so2-product').value;
+            const burette = parseFloat(document.getElementById('so2-burette').value);
+            const iodineNormality = parseFloat(document.getElementById('so2-iodine').value);
+
+            if (!product || product === '') {
+                alert('Please select a sample source');
+                return;
+            }
+
+            if (isNaN(burette) || isNaN(iodineNormality)) {
+                alert('Please fill in all fields with valid numbers');
+                return;
+            }
+
+            const so2ppm = burette * iodineNormality * 32.032 * 100;
+
+            const now = new Date();
+            const dateOptions = { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                weekday: 'long'
+            };
+            const timeOptions = {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true
+            };
+            const dateStr = now.toLocaleDateString('en-US', dateOptions);
+            const timeStr = now.toLocaleTimeString('en-US', timeOptions);
+
+            so2History.unshift({
+                ppm: so2ppm.toFixed(2),
+                date: dateStr,
+                time: timeStr,
+                burette: burette,
+                iodineNormality: iodineNormality,
+                sampleFrom: product
+            });
+
+            if (so2History.length > 10) {
+                so2History.pop();
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('so2History', JSON.stringify(so2History));
+
+            const resultBox = document.getElementById('so2-result');
+            resultBox.innerHTML = `
+                <div class="result-item">
+                    <span class="result-label">Sample From:</span>
+                    <span class="result-value">${product}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">SO2 Concentration:</span>
+                    <span class="result-value">${so2ppm.toFixed(2)} ppm</span>
+                </div>
+                <div class="timestamp">
+                    <strong>📅 Test Date & Time:</strong><br>
+                    ${dateStr}<br>
+                    ${timeStr}
+                </div>
+            `;
+            resultBox.classList.add('show');
+
+            updateSO2History();
+        }
+
+        function updateSO2History() {
+            const historySection = document.getElementById('so2-history-section');
+            const historyContainer = document.getElementById('so2-history');
+
+            if (so2History.length === 0) {
+                historySection.style.display = 'none';
+                return;
+            }
+
+            historySection.style.display = 'block';
+
+            let historyHTML = '';
+            so2History.forEach((item, index) => {
+                historyHTML += `
+                    <div class="history-item">
+                        <div><strong>#${index + 1}</strong> - <span class="ppm-value">${item.ppm} ppm</span></div>
+                        <div class="sample-from">📍 Sample From: ${item.sampleFrom}</div>
+                        <div class="timestamp-text">
+                            📅 ${item.date} at ${item.time}<br>
+                            📊 Burette: ${item.burette} mL | Iodine Normality: ${item.iodineNormality} N
+                        </div>
+                    </div>
+                `;
+            });
+
+            historyContainer.innerHTML = historyHTML;
+        }
+
+        function clearSO2History() {
+            if (confirm('Are you sure you want to clear all SO2 measurement history?')) {
+                so2History = [];
+                localStorage.setItem('so2History', JSON.stringify(so2History));
+                updateSO2History();
+                alert('History cleared successfully!');
+            }
+        }
+        
+        // Admin Logout (optional - can be called from console if needed)
+        function adminLogout() {
+            if (confirm('Are you sure you want to logout from admin panel?')) {
+                isAdminLoggedIn = false;
+                localStorage.setItem('isAdminLoggedIn', JSON.stringify(false));
+                
+                // Make normality fields readonly again
+                document.getElementById('protein-normality').setAttribute('readonly', 'readonly');
+                document.getElementById('so2-iodine').setAttribute('readonly', 'readonly');
+                
+                // Hide normality settings
+                document.getElementById('normality-settings').style.display = 'none';
+                
+                alert('✅ Admin logged out successfully!');
+            }
+        }
+        
+        // Export All Data
+        function exportAllData() {
+            const exportData = {
+                proteinHistory: proteinHistory,
+                fatHistory: fatHistory,
+                ashHistory: ashHistory,
+                so2History: so2History,
+                proteinNormality: savedProteinNormality,
+                so2Normality: savedSO2Normality,
+                exportDate: new Date().toISOString(),
+                version: '1.0'
+            };
+            
+            const dataStr = JSON.stringify(exportData, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'starch-lab-data-' + new Date().toISOString().split('T')[0] + '.json';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            
+            alert('✅ Data exported successfully!\n\nFile saved: ' + link.download + '\n\n📱 You can now import this file on any other device to sync your data.');
+        }
+        
+        // Import All Data
+        function importAllData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importData = JSON.parse(e.target.result);
+                    
+                    // Validate data
+                    if (!importData.version) {
+                        throw new Error('Invalid file format');
+                    }
+                    
+                    // Confirm import
+                    const confirmMsg = `Import data from ${new Date(importData.exportDate).toLocaleDateString()}?\n\nThis will:\n• Replace protein history (${importData.proteinHistory?.length || 0} entries)\n• Replace fat history (${importData.fatHistory?.length || 0} entries)\n• Replace ash history (${importData.ashHistory?.length || 0} entries)\n• Replace SO2 history (${importData.so2History?.length || 0} entries)\n• Update normality values`;
+                    
+                    if (!confirm(confirmMsg)) return;
+                    
+                    // Import data
+                    if (importData.proteinHistory) {
+                        proteinHistory = importData.proteinHistory;
+                        localStorage.setItem('proteinHistory', JSON.stringify(proteinHistory));
+                    }
+                    
+                    if (importData.fatHistory) {
+                        fatHistory = importData.fatHistory;
+                        localStorage.setItem('fatHistory', JSON.stringify(fatHistory));
+                    }
+                    
+                    if (importData.ashHistory) {
+                        ashHistory = importData.ashHistory;
+                        localStorage.setItem('ashHistory', JSON.stringify(ashHistory));
+                    }
+                    
+                    if (importData.so2History) {
+                        so2History = importData.so2History;
+                        localStorage.setItem('so2History', JSON.stringify(so2History));
+                    }
+                    
+                    if (importData.proteinNormality) {
+                        savedProteinNormality = importData.proteinNormality;
+                        localStorage.setItem('proteinNormality', savedProteinNormality);
+                        document.getElementById('protein-normality').value = savedProteinNormality;
+                        document.getElementById('admin-protein-normality').value = savedProteinNormality;
+                    }
+                    
+                    if (importData.so2Normality) {
+                        savedSO2Normality = importData.so2Normality;
+                        localStorage.setItem('so2Normality', savedSO2Normality);
+                        document.getElementById('so2-iodine').value = savedSO2Normality;
+                        document.getElementById('admin-so2-normality').value = savedSO2Normality;
+                    }
+                    
+                    // Update displays
+                    updateProteinHistory();
+                    updateFatHistory();
+                    updateAshHistory();
+                    updateSO2History();
+                    
+                    alert('✅ Data imported successfully!\n\n• Protein: ' + proteinHistory.length + ' entries\n• Fat: ' + fatHistory.length + ' entries\n• Ash: ' + ashHistory.length + ' entries\n• SO2: ' + so2History.length + ' entries\n• Normality values updated');
+                    
+                } catch (error) {
+                    alert('❌ Error importing data: ' + error.message + '\n\nPlease make sure you selected a valid export file.');
+                }
+            };
+            reader.readAsText(file);
+            
+            // Reset file input
+            event.target.value = '';
+        }
+        
+        // Download Protein Report (HTML)
+        function downloadProteinReport() {
+            if (proteinHistory.length === 0) {
+                alert('No protein calculations to download. Please save some calculations first.');
+                return;
+            }
+            
+            const now = new Date();
+            const reportDate = now.toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                weekday: 'long'
+            });
+            const reportTime = now.toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+            });
+            
+            let html = generateReportHTML('Protein Analysis', reportDate, reportTime);
+            
+            html += `
+                <div class="settings-box">
+                    <h3>Current Settings</h3>
+                    <table>
+                        <tr>
+                            <td><strong>H2SO4 Normality:</strong></td>
+                            <td>${savedProteinNormality} N</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Blank Reading:</strong></td>
+                            <td>0.2 mL (Locked)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Conversion Factor:</strong></td>
+                            <td>6.25</td>
+                        </tr>
+                    </table>
+                </div>
+            `;
+            
+            proteinHistory.forEach((item, index) => {
+                html += `
+                    <div class="entry-box">
+                        <div class="entry-header">Entry #${index + 1}</div>
+                        <table>
+                            <tr>
+                                <td><strong>Date/Time:</strong></td>
+                                <td>${item.date} at ${item.time}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Product:</strong></td>
+                                <td>${item.product.charAt(0).toUpperCase() + item.product.slice(1)}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Basis:</strong></td>
+                                <td>${item.basis}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Burette Reading:</strong></td>
+                                <td>${item.burette} mL</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Blank Reading:</strong></td>
+                                <td>${item.blank} mL</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Sample Weight:</strong></td>
+                                <td>${item.sample} g</td>
+                            </tr>
+                            <tr>
+                                <td><strong>H2SO4 Normality:</strong></td>
+                                <td>${item.normality} N</td>
+                            </tr>
+                            <tr class="highlight">
+                                <td><strong>Nitrogen %:</strong></td>
+                                <td>${item.nitrogenPercent}%</td>
+                            </tr>
+                            <tr class="highlight">
+                                <td><strong>Protein % (Actual):</strong></td>
+                                <td>${item.proteinActual}%</td>
+                            </tr>
+                            <tr class="highlight">
+                                <td><strong>Protein % (Final):</strong></td>
+                                <td>${item.proteinFinal}%</td>
+                            </tr>
+                            ${item.moisture > 0 ? `
+                            <tr>
+                                <td><strong>Moisture %:</strong></td>
+                                <td>${item.moisture}%</td>
+                            </tr>
+                            ` : ''}
+                        </table>
+                    </div>
+                `;
+            });
+            
+            html += closeReportHTML();
+            downloadHTMLFile(html, 'Protein-Report-' + new Date().toISOString().split('T')[0] + '.html');
+        }
+        
+        // Download Fat Report (HTML)
+        function downloadFatReport() {
+            if (fatHistory.length === 0) {
+                alert('No fat calculations to download. Please save some calculations first.');
+                return;
+            }
+            
+            const now = new Date();
+            const reportDate = now.toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                weekday: 'long'
+            });
+            const reportTime = now.toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+            });
+            
+            let html = generateReportHTML('Fat Analysis', reportDate, reportTime);
+            
+            fatHistory.forEach((item, index) => {
+                html += `
+                    <div class="entry-box">
+                        <div class="entry-header">Entry #${index + 1}</div>
+                        <table>
+                            <tr>
+                                <td><strong>Date/Time:</strong></td>
+                                <td>${item.date} at ${item.time}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Product:</strong></td>
+                                <td>${item.product.charAt(0).toUpperCase() + item.product.slice(1)}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Empty Container:</strong></td>
+                                <td>${item.container} g</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Container + Fat:</strong></td>
+                                <td>${item.containerFat} g</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Sample Weight:</strong></td>
+                                <td>${item.sample} g</td>
+                            </tr>
+                            <tr class="highlight">
+                                <td><strong>Fat Weight:</strong></td>
+                                <td>${item.fatWeight} g</td>
+                            </tr>
+                            <tr class="highlight">
+                                <td><strong>Fat %:</strong></td>
+                                <td>${item.fatPercent}%</td>
+                            </tr>
+                        </table>
+                    </div>
+                `;
+            });
+            
+            html += closeReportHTML();
+            downloadHTMLFile(html, 'Fat-Report-' + new Date().toISOString().split('T')[0] + '.html');
+        }
+        
+        // Download Ash Report (HTML)
+        function downloadAshReport() {
+            if (ashHistory.length === 0) {
+                alert('No ash calculations to download. Please save some calculations first.');
+                return;
+            }
+            
+            const now = new Date();
+            const reportDate = now.toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                weekday: 'long'
+            });
+            const reportTime = now.toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+            });
+            
+            let html = generateReportHTML('Ash Analysis', reportDate, reportTime);
+            
+            ashHistory.forEach((item, index) => {
+                html += `
+                    <div class="entry-box">
+                        <div class="entry-header">Entry #${index + 1}</div>
+                        <table>
+                            <tr>
+                                <td><strong>Date/Time:</strong></td>
+                                <td>${item.date} at ${item.time}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Product:</strong></td>
+                                <td>${item.product.charAt(0).toUpperCase() + item.product.slice(1)}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Empty Container:</strong></td>
+                                <td>${item.container} g</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Container + Ash:</strong></td>
+                                <td>${item.containerAsh} g</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Sample Weight:</strong></td>
+                                <td>${item.sample} g</td>
+                            </tr>
+                            <tr class="highlight">
+                                <td><strong>Ash Weight:</strong></td>
+                                <td>${item.ashWeight} g</td>
+                            </tr>
+                            <tr class="highlight">
+                                <td><strong>Ash %:</strong></td>
+                                <td>${item.ashPercent}%</td>
+                            </tr>
+                        </table>
+                    </div>
+                `;
+            });
+            
+            html += closeReportHTML();
+            downloadHTMLFile(html, 'Ash-Report-' + new Date().toISOString().split('T')[0] + '.html');
+        }
+        
+        // Download SO2 Report (HTML)
+        function downloadSO2Report() {
+            if (so2History.length === 0) {
+                alert('No SO2 measurements to download. Please save some measurements first.');
+                return;
+            }
+            
+            const now = new Date();
+            const reportDate = now.toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                weekday: 'long'
+            });
+            const reportTime = now.toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+            });
+            
+            let html = generateReportHTML('SO2 Measurement', reportDate, reportTime);
+            
+            html += `
+                <div class="settings-box">
+                    <h3>Current Settings</h3>
+                    <table>
+                        <tr>
+                            <td><strong>Iodine Normality:</strong></td>
+                            <td>${savedSO2Normality} N</td>
+                        </tr>
+                    </table>
+                </div>
+            `;
+            
+            so2History.forEach((item, index) => {
+                html += `
+                    <div class="entry-box">
+                        <div class="entry-header">Entry #${index + 1}</div>
+                        <table>
+                            <tr>
+                                <td><strong>Date/Time:</strong></td>
+                                <td>${item.date} at ${item.time}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Sample From:</strong></td>
+                                <td>${item.sampleFrom}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Burette Reading:</strong></td>
+                                <td>${item.burette} mL</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Iodine Normality:</strong></td>
+                                <td>${item.iodineNormality} N</td>
+                            </tr>
+                            <tr class="highlight">
+                                <td><strong>SO2 Concentration:</strong></td>
+                                <td>${item.ppm} ppm</td>
+                            </tr>
+                        </table>
+                    </div>
+                `;
+            });
+            
+            html += closeReportHTML();
+            downloadHTMLFile(html, 'SO2-Report-' + new Date().toISOString().split('T')[0] + '.html');
+        }
+        
+        // Generate HTML Report Template
+        function generateReportHTML(title, date, time) {
+            return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STARCH PROCESS LAB - ${title} Report</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
+            background: #f0f0eb;
+            padding: 40px 20px;
+            color: #1a1a1a;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1a2332 0%, #0d1520 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            border-bottom: 4px solid #d4a12a;
+        }
+        
+        .header .corn-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+        
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .header .lab {
+            color: #d4a12a;
+        }
+        
+        .header .subtitle {
+            font-size: 0.9em;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+        }
+        
+        .report-title {
+            background: linear-gradient(135deg, #fef9e7 0%, #fef5d4 100%);
+            border-left: 5px solid #d4a12a;
+            padding: 20px 30px;
+            margin: 30px;
+            border-radius: 8px;
+        }
+        
+        .report-title h2 {
+            color: #1a2332;
+            font-size: 1.8em;
+            margin-bottom: 10px;
+        }
+        
+        .report-meta {
+            color: #64748b;
+            font-size: 0.95em;
+            margin-top: 10px;
+        }
+        
+        .report-meta strong {
+            color: #d4a12a;
+        }
+        
+        .content {
+            padding: 0 30px 30px;
+        }
+        
+        .settings-box {
+            background: #fafaf8;
+            border: 2px solid #e0e0dc;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .settings-box h3 {
+            color: #1a2332;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #d4a12a;
+            padding-bottom: 10px;
+        }
+        
+        .entry-box {
+            background: white;
+            border: 2px solid #e0e0dc;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .entry-header {
+            background: linear-gradient(135deg, #d4a12a 0%, #b8902a 100%);
+            color: white;
+            padding: 12px 20px;
+            margin: -20px -20px 20px -20px;
+            font-weight: 700;
+            font-size: 1.1em;
+            border-radius: 6px 6px 0 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        table tr {
+            border-bottom: 1px solid #f0f0eb;
+        }
+        
+        table tr:last-child {
+            border-bottom: none;
+        }
+        
+        table td {
+            padding: 12px 8px;
+        }
+        
+        table td:first-child {
+            width: 45%;
+            color: #64748b;
+        }
+        
+        table td:last-child {
+            font-weight: 600;
+            color: #1a2332;
+        }
+        
+        table tr.highlight td:last-child {
+            color: #d4a12a;
+            font-size: 1.1em;
+        }
+        
+        .footer {
+            background: #fafaf8;
+            border-top: 2px solid #e0e0dc;
+            padding: 20px 30px;
+            text-align: center;
+            color: #64748b;
+            font-size: 0.9em;
+        }
+        
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .container {
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="corn-icon">🌽</div>
+            <h1>STARCH PROCESS <span class="lab">LAB</span></h1>
+            <div class="subtitle">Process Intelligence</div>
+        </div>
+        
+        <div class="report-title">
+            <h2>${title} Report</h2>
+            <div class="report-meta">
+                <strong>Generated:</strong> ${date} at ${time}<br>
+                <strong>Total Entries:</strong> ${title === 'Protein Analysis' ? proteinHistory.length : 
+                                                 title === 'Fat Analysis' ? fatHistory.length : 
+                                                 title === 'Ash Analysis' ? ashHistory.length : 
+                                                 so2History.length}
+            </div>
+        </div>
+        
+        <div class="content">
+`;
+        }
+        
+        // Close HTML Report
+        function closeReportHTML() {
+            return `
+        </div>
+        
+        <div class="footer">
+            <p><strong>Starch Process Lab - Laboratory Management System</strong></p>
+            <p>This report contains verified laboratory analysis data</p>
+            <p>&copy; 2026 Process Intelligence Division</p>
+        </div>
+    </div>
+</body>
+</html>`;
+        }
+        
+        // Download HTML File
+        function downloadHTMLFile(content, filename) {
+            const blob = new Blob([content], { type: 'text/html;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            
+            alert('✅ Professional report downloaded!\n\n📄 File: ' + filename + '\n\nThe report can be:\n• Opened in any web browser\n• Printed to PDF\n• Shared via email');
+        }
+
+        // Ash Calculator
+        function calculateAsh() {
+            const product = document.getElementById('ash-product').value;
+            const container = parseFloat(document.getElementById('ash-container').value);
+            const containerAsh = parseFloat(document.getElementById('ash-container-ash').value);
+            const sample = parseFloat(document.getElementById('ash-sample').value);
+
+            if (isNaN(container) || isNaN(containerAsh) || isNaN(sample)) {
+                alert('Please fill in all fields with valid numbers');
+                return;
+            }
+
+            if (sample <= 0) {
+                alert('Sample weight must be greater than 0');
+                return;
+            }
+
+            if (containerAsh < container) {
+                alert('Container + Ash weight must be greater than empty container weight');
+                return;
+            }
+
+            const ashWeight = containerAsh - container;
+            const ashPercent = (ashWeight / sample) * 100;
+
+            const resultBox = document.getElementById('ash-result');
+            resultBox.innerHTML = `
+                <div class="result-item">
+                    <span class="result-label">Product:</span>
+                    <span class="result-value">${product.charAt(0).toUpperCase() + product.slice(1)}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Ash Weight:</span>
+                    <span class="result-value">${ashWeight.toFixed(4)} g</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Ash %:</span>
+                    <span class="result-value">${ashPercent.toFixed(4)}%</span>
+                </div>
+            `;
+            resultBox.classList.add('show');
+            
+            // Add save button
+            const saveButtonHTML = `
+                <button class="calculate-btn" style="margin-top: 15px; background: linear-gradient(135deg, #10b981 0%, #059669 100%);" onclick="saveAshCalculation()">
+                    💾 Save This Calculation
+                </button>
+            `;
+            resultBox.innerHTML += saveButtonHTML;
+            
+            // Store current calculation data for saving
+            window.currentAshCalculation = {
+                product: product,
+                container: container,
+                containerAsh: containerAsh,
+                sample: sample,
+                ashWeight: ashWeight.toFixed(4),
+                ashPercent: ashPercent.toFixed(4)
+            };
+        }
+        
+        // Save Ash Calculation
+        function saveAshCalculation() {
+            if (!window.currentAshCalculation) {
+                alert('No calculation to save!');
+                return;
+            }
+            
+            const calc = window.currentAshCalculation;
+            
+            // Get current date and time
+            const now = new Date();
+            const dateOptions = { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                weekday: 'long'
+            };
+            const timeOptions = {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true
+            };
+            const dateStr = now.toLocaleDateString('en-US', dateOptions);
+            const timeStr = now.toLocaleTimeString('en-US', timeOptions);
+            
+            // Add to history
+            ashHistory.unshift({
+                product: calc.product,
+                container: calc.container,
+                containerAsh: calc.containerAsh,
+                sample: calc.sample,
+                ashWeight: calc.ashWeight,
+                ashPercent: calc.ashPercent,
+                date: dateStr,
+                time: timeStr,
+                timestamp: now.getTime()
+            });
+            
+            // Keep only last 10
+            if (ashHistory.length > 10) {
+                ashHistory.pop();
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('ashHistory', JSON.stringify(ashHistory));
+            
+            // Update display
+            updateAshHistory();
+            
+            alert('✅ Calculation saved successfully!\n\n📅 ' + dateStr + '\n🕐 ' + timeStr);
+        }
+        
+        // Update Ash History Display
+        function updateAshHistory() {
+            const historySection = document.getElementById('ash-history-section');
+            const historyContainer = document.getElementById('ash-history');
+
+            if (ashHistory.length === 0) {
+                historySection.style.display = 'none';
+                return;
+            }
+
+            historySection.style.display = 'block';
+
+            let historyHTML = '';
+            ashHistory.forEach((item, index) => {
+                historyHTML += `
+                    <div class="history-item">
+                        <div><strong>#${index + 1}</strong> - <span class="ppm-value">${item.product.charAt(0).toUpperCase() + item.product.slice(1)} - ${item.ashPercent}% Ash</span></div>
+                        <div class="sample-from">📍 Container: ${item.container} g | Container+Ash: ${item.containerAsh} g | Sample: ${item.sample} g</div>
+                        <div class="sample-from">🧪 Ash Weight: ${item.ashWeight} g</div>
+                        <div class="timestamp-text">
+                            📅 ${item.date} at ${item.time}
+                        </div>
+                    </div>
+                `;
+            });
+
+            historyContainer.innerHTML = historyHTML;
+        }
+        
+        // Clear Ash History
+        function clearAshHistory() {
+            if (confirm('Are you sure you want to clear all ash calculation history?')) {
+                ashHistory = [];
+                localStorage.setItem('ashHistory', JSON.stringify(ashHistory));
+                updateAshHistory();
+                alert('History cleared successfully!');
+            }
+        }
+
+        // Allow Enter key to trigger password check
+        document.getElementById('admin-password').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                checkAdminPassword();
+            }
+        });
+    </script>
+</body>
+</html>
